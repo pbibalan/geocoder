@@ -43,6 +43,17 @@ module Geocoder::Store
             select(select_clause(nil, "NULL", "NULL")).where(false_condition)
           end
         }
+        
+        scope :near_new, lambda{ |latitude, longitude, *args|
+          if Geocoder::Calculations.coordinates_present?(latitude, longitude)
+            near_scope_options(latitude, longitude, *args)
+          else
+            # If no lat/lon given we don't want any results, but we still
+            # need distance and bearing columns so you can add, for example:
+            # .order("distance")
+            select(select_clause(nil, "NULL", "NULL")).where(false_condition)
+          end
+        }
 
         ##
         # Find all objects within the area of a given bounding box.
